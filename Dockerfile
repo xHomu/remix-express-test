@@ -40,6 +40,10 @@ FROM base
 # Copy built application
 COPY --from=build /app /app
 
+# Install supervisor in the base image
+RUN apk add --no-cache supervisor
+COPY supervisord.conf package.json ./
+
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "npm", "run", "start" ]
+CMD ["supervisord", "-c", "supervisord.conf"]
