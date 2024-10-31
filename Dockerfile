@@ -18,10 +18,10 @@ FROM base as build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3 supervisor
 
 # Install node modules
-COPY package-lock.json package.json ./
+COPY package-lock.json package.json supervisord.conf ./
 RUN npm ci --include=dev
 
 # Copy application code
@@ -39,10 +39,6 @@ FROM base
 
 # Copy built application
 COPY --from=build /app /app
-
-# Install supervisor in the base image
-RUN apk add --no-cache supervisor
-COPY supervisord.conf package.json ./
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
